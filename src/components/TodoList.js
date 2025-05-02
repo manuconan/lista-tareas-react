@@ -2,6 +2,15 @@ import React from 'react';
 import TodoItem from './TodoItem'; // Importamos el componente para cada tarea individual
 
 function TodoList({ todos, toggleComplete, deleteTodo }) {
+
+  //Si no hay tareas, mostramos un mensaje
+  if (todos.length === 0) {
+    return <p style={{
+      textAlign: 'center',
+      color: 'gray',
+      fontSize: 'italic'
+    }}>No hay tareas aún</p>
+  }
   return (
     <ol style={{ listStyleType: 'decimal', padding: 0 }}> {/* Ahora usamos 'decimal' para la numeración */}
       {todos.map((todo, index) => (  // 'index' nos da la posición de la tarea en el array
