@@ -7,37 +7,38 @@ import TodoItem from './TodoItem';
 /**
  * Componente TodoList
  * 
- * Este componente se encarga de mostrar la lista de tareas y permitir 
- * que el usuario realice acciones sobre ellas, como marcar como completadas
- * o eliminar tareas. Si no hay tareas, se muestra un mensaje indicando que 
- * la lista está vacía.
+ * Este componente se encarga de mostrar la lista de tareas y permite realizar 
+ * acciones sobre ellas, como marcar tareas como completadas o eliminarlas. 
+ * Si no hay tareas, se muestra un mensaje indicando que la lista está vacía.
  * 
- * @param {Array} todos - Lista de tareas a mostrar.
- * @param {Function} toggleComplete - Función para marcar/desmarcar las tareas como completadas.
- * @param {Function} deleteTodo - Función para eliminar una tarea.
+ * @param {Array} todos - Lista de tareas que se deben mostrar en la interfaz.
+ * @param {Function} toggleComplete - Función para marcar o desmarcar una tarea como completada.
+ * @param {Function} deleteTodo - Función para eliminar una tarea de la lista.
  * 
- * @returns {JSX} Renderiza la lista de tareas o un mensaje si no hay tareas.
+ * @returns {JSX.Element} El JSX que renderiza la lista de tareas o un mensaje si la lista está vacía.
  */
 function TodoList({ todos, toggleComplete, deleteTodo }) {
 
-  // Si no hay tareas, mostramos un mensaje indicando que no hay tareas aún
+  // Si no hay tareas, mostramos un mensaje indicando que la lista está vacía
   if (todos.length === 0) {
-    return <p style={{
-      textAlign: 'center', // Centra el mensaje en la página
-      color: 'gray',       // Color gris para el texto
-      fontSize: 'italic'   // Estilo en cursiva
-    }}>
-      No hay tareas aún
-    </p>
+    return (
+      <p style={{
+        textAlign: 'center', // Centra el mensaje en la página
+        color: 'gray',       // Color gris para el texto
+        fontSize: 'italic'   // Estilo en cursiva para el mensaje
+      }}>
+        No hay tareas aún
+      </p>
+    );
   }
 
   /**
    * Función handleDelete
    * 
-   * Esta función maneja la eliminación de tareas. Muestra un cuadro de confirmación
-   * antes de proceder con la eliminación.
+   * Esta función maneja la eliminación de una tarea. Antes de eliminarla, 
+   * muestra un cuadro de confirmación para que el usuario confirme su acción.
    * 
-   * @param {number} id - ID de la tarea a eliminar.
+   * @param {number} id - ID de la tarea que se va a eliminar.
    */
   const handleDelete = (id) => {
 
@@ -52,7 +53,7 @@ function TodoList({ todos, toggleComplete, deleteTodo }) {
   };
 
   return (
-    // Renderizamos la lista de tareas
+    // Renderizamos la lista de tareas con numeración
     <ol style={{ listStyleType: 'decimal', padding: 0 }}> {/* Numeración decimal y sin padding */}
       {
         // Usamos map() para recorrer todas las tareas en el array 'todos'
@@ -60,9 +61,9 @@ function TodoList({ todos, toggleComplete, deleteTodo }) {
           // Por cada tarea, renderizamos el componente TodoItem
           <TodoItem
             key={todo.id}            // ID único para cada tarea
-            todo={todo}               // Pasamos el objeto 'todo' como prop al componente TodoItem
+            todo={todo}               // Pasamos el objeto 'todo' al componente TodoItem
             index={index + 1}         // Pasamos el índice de la tarea, +1 para que empiece desde 1
-            toggleComplete={toggleComplete}  // Función para marcar/desmarcar tarea como completada
+            toggleComplete={toggleComplete}  // Función para marcar/desmarcar la tarea como completada
             deleteTodo={() => handleDelete(todo.id)} // Función para eliminar la tarea con confirmación
           />
         ))
