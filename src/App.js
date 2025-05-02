@@ -1,91 +1,66 @@
-// Importamos los módulos necesarios de React
-import './App.css'; // Importamos los estilos CSS
-import React, { useState } from 'react'; // useState nos permite manejar estado en componentes funcionales
+import './App.css';
+import React, { useState } from 'react';
+import TodoForm from "./components/TodoForm";
+import TodoList from "./components/TodoList";
 
-// Importamos nuestros componentes personalizados
-import TodoForm from "./components/TodoForm"; // Componente con el formulario para añadir tareas
-import TodoList from "./components/TodoList"; // Componente que muestra la lista de tareas
-
-// Componente principal de la aplicación
 function App() {
-  /*
-   * Estado para almacenar nuestras tareas
-   * - todos: Array que contiene todas las tareas
-   * - setTodos: Función para actualizar el estado
-   * Cada tarea será un objeto con { id, text, completed }
-   */
+  // Estado que almacena todas las tareas
   const [todos, setTodos] = useState([]);
 
   /**
    * Función para agregar una nueva tarea
-   * @param {string} text - Texto de la tarea que viene del formulario
+   * @param {string} text - El texto de la nueva tarea a agregar
    */
   const addTodo = (text) => {
-    // Creamos un nuevo objeto tarea
     const newTodo = {
-      id: Date.now(),    // ID único basado en la marca de tiempo actual
-      text,              // Texto de la tarea (usamos shorthand property)
-      completed: false   // Estado inicial (no completada)
+      id: Date.now(),  // Usamos la marca de tiempo para que cada tarea tenga un ID único
+      text,            // El texto de la tarea es el que pasa el usuario
+      completed: false // La tarea comienza sin estar completada
     };
 
-    // Actualizamos el estado:
-    // 1. newTodo: la nueva tarea
-    // 2. ...todos: todas las tareas existentes (usamos spread operator)
+    // Actualizamos el estado 'todos' agregando la nueva tarea al principio de la lista
     setTodos([newTodo, ...todos]);
   };
 
   /**
    * Función para cambiar el estado de completado de una tarea
-   * @param {number} id - ID de la tarea a modificar
+   * @param {number} id - El ID de la tarea que queremos marcar/desmarcar como completada
    */
   const toggleComplete = (id) => {
+    // Mapeamos la lista de tareas y actualizamos la tarea con el ID correspondiente
     setTodos(
-      // Mapeamos todas las tareas
       todos.map(todo =>
-        // Si encontramos la tarea con el ID, cambiamos su estado 'completed'
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-        // ...todo copia todas las propiedades de la tarea existente
-        // !todo.completed invierte el valor actual de 'completed'
+        todo.id === id 
+          ? { ...todo, completed: !todo.completed } // Si la tarea es la correcta, invertimos su estado 'completed'
+          : todo // Si no es la tarea, la dejamos tal cual está
       )
     );
   };
 
   /**
-   * Función para eliminar una tarea
-   * @param {number} id - ID de la tarea a eliminar
+   * Función para eliminar una tarea de la lista
+   * @param {number} id - El ID de la tarea que queremos eliminar
    */
   const deleteTodo = (id) => {
-    // Filtramos el array para mantener solo las tareas cuyo ID no coincida
+    // Filtramos las tareas para eliminar la que tenga el ID igual al pasado
     setTodos(todos.filter(todo => todo.id !== id));
   };
 
-  // Renderizado del componente
   return (
     <div className="App">
-      {/* Título principal de la aplicación */}
       <h1>Lista de Tareas</h1>
 
-      {/*
-       * Componente TodoForm
-       * - Le pasamos la función addTodo como prop
-       * - Será llamada cuando el usuario envíe una nueva tarea
-       */}
+      {/* Componente para agregar nuevas tareas */}
       <TodoForm addTodo={addTodo} />
 
-      {/*
-       * Componente TodoList
-       * - todos: Lista completa de tareas
-       * - toggleComplete: Función para marcar/desmarcar tareas
-       * - deleteTodo: Función para eliminar tareas
-       */}
+      {/* Componente para mostrar todas las tareas */}
       <TodoList 
-        todos={todos} 
-        toggleComplete={toggleComplete} 
-        deleteTodo={deleteTodo} 
+        todos={todos}         // Lista de tareas
+        toggleComplete={toggleComplete} // Función para marcar/desmarcar tareas
+        deleteTodo={deleteTodo} // Función para eliminar tareas
       />
     </div>
   );
 }
 
-// Exportamos el componente para que pueda ser usado en otros archivos
 export default App;
