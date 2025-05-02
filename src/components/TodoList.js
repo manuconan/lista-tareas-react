@@ -1,23 +1,30 @@
-/** Este componente recibe un array de tareas "todos"desde App.js
- * usa .map() para recorrer cada tarea y mostrarla usando un componente hijo:
- * todoItem
- * Cada "TodoItem" recibe el objeto de la tarea como prop y un key único(React lo 
- * necestia para identificar el elemento)
+import TodoItem from './TodoItem';
+
+/**
+ * Componente que muestra la lista completa de tareas
+ * @param {Object} props - Recibe tres props:
+ * - todos: Array de tareas 
+ * - toggleComplete: Función para marcar/completar tareas
+ * - deleteTodo: Función para eliminar tareas
  */
-
-import React from "react";
-import TodoItem from "./TodoItem";
-
-//Este componente recibe un array de tareas como prop
-function TodoList({todos}){// esta entre llaves porque es una forma de desestructuración de props en React y js 
-return(
-    <ul>
-        {todos.map((todo) => (
-        // Por cada tarea, renderizamos un componente TodoItem
-        // Le pasamos el objeto todo como prop y usamos su id como key
-        <TodoItem key={todo.id} todo={todo} />
+function TodoList({ todos, toggleComplete, deleteTodo }) {
+  return (
+    <ol style={{ 
+      listStyleType: 'none',  // Elimina la numeración por defecto
+      padding: 0,
+      counterReset: 'item-counter'  // Inicializa el contador CSS
+    }}>
+      {todos.map((todo, index) => (  // index viene del map
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          index={index + 1}  // Pasamos el número de posición (1-based)
+          toggleComplete={toggleComplete}
+          deleteTodo={deleteTodo}  // Aseguramos que deleteTodo se pasa correctamente
+        />
       ))}
-    </ul>
-);
+    </ol>
+  );
 }
+
 export default TodoList;

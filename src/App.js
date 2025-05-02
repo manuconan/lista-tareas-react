@@ -1,43 +1,91 @@
-import './App.css';
-// Importamos React y el hook useState para manejar el estado del componente
-import React, { useState } from 'react';
+// Importamos los módulos necesarios de React
+import './App.css'; // Importamos los estilos CSS
+import React, { useState } from 'react'; // useState nos permite manejar estado en componentes funcionales
 
-// Importamos los componentes que crearemos: el formulario para agregar tareas y la lista que las muestra
-import TodoForm from "./components/TodoForm";
-import TodoList from "./components/TodoList";
+// Importamos nuestros componentes personalizados
+import TodoForm from "./components/TodoForm"; // Componente con el formulario para añadir tareas
+import TodoList from "./components/TodoList"; // Componente que muestra la lista de tareas
 
-// Componente principal de la aplicación.
+// Componente principal de la aplicación
 function App() {
-  const [todos, setTodos] = useState([]);  // Esto debe estar aquí
+  /*
+   * Estado para almacenar nuestras tareas
+   * - todos: Array que contiene todas las tareas
+   * - setTodos: Función para actualizar el estado
+   * Cada tarea será un objeto con { id, text, completed }
+   */
+  const [todos, setTodos] = useState([]);
 
-  // Estado que almacena el array de tareas (cada una será un objeto con id, texto y estado de completado)
+  /**
+   * Función para agregar una nueva tarea
+   * @param {string} text - Texto de la tarea que viene del formulario
+   */
   const addTodo = (text) => {
-    // Creamos una nueva tarea como objeto
+    // Creamos un nuevo objeto tarea
     const newTodo = {
-      id: Date.now(),    // Generamos un ID Único usando marca de tiempo actual
-      text,             // Texto de la tarea (lo recibe como parámetro).
-      completed: false, // Estado inicial de la tarea (no completada)
+      id: Date.now(),    // ID único basado en la marca de tiempo actual
+      text,              // Texto de la tarea (usamos shorthand property)
+      completed: false   // Estado inicial (no completada)
     };
 
-    // Actualizamos el estado, agregando la nueva tarea al inicio del array
+    // Actualizamos el estado:
+    // 1. newTodo: la nueva tarea
+    // 2. ...todos: todas las tareas existentes (usamos spread operator)
     setTodos([newTodo, ...todos]);
   };
 
-  // JSX que se renderiza en pantalla
+  /**
+   * Función para cambiar el estado de completado de una tarea
+   * @param {number} id - ID de la tarea a modificar
+   */
+  const toggleComplete = (id) => {
+    setTodos(
+      // Mapeamos todas las tareas
+      todos.map(todo =>
+        // Si encontramos la tarea con el ID, cambiamos su estado 'completed'
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        // ...todo copia todas las propiedades de la tarea existente
+        // !todo.completed invierte el valor actual de 'completed'
+      )
+    );
+  };
+
+  /**
+   * Función para eliminar una tarea
+   * @param {number} id - ID de la tarea a eliminar
+   */
+  const deleteTodo = (id) => {
+    // Filtramos el array para mantener solo las tareas cuyo ID no coincida
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  // Renderizado del componente
   return (
     <div className="App">
-      {/* Título principal */}
+      {/* Título principal de la aplicación */}
       <h1>Lista de Tareas</h1>
 
-      {/* Componente del formulario para añadir nuevas tareas.
-          Le pasamos la función addTodo como prop */}
+      {/*
+       * Componente TodoForm
+       * - Le pasamos la función addTodo como prop
+       * - Será llamada cuando el usuario envíe una nueva tarea
+       */}
       <TodoForm addTodo={addTodo} />
 
-      {/* Componente para mostrar la lista de tareas */}
-      <TodoList todos={todos} />
+      {/*
+       * Componente TodoList
+       * - todos: Lista completa de tareas
+       * - toggleComplete: Función para marcar/desmarcar tareas
+       * - deleteTodo: Función para eliminar tareas
+       */}
+      <TodoList 
+        todos={todos} 
+        toggleComplete={toggleComplete} 
+        deleteTodo={deleteTodo} 
+      />
     </div>
   );
 }
 
-// Exportamos el componente para que pueda ser usado en index.js
+// Exportamos el componente para que pueda ser usado en otros archivos
 export default App;
