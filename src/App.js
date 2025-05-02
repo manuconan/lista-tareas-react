@@ -1,43 +1,66 @@
 import './App.css';
-// Importamos React y el hook useState para manejar el estado del componente
 import React, { useState } from 'react';
-
-// Importamos los componentes que crearemos: el formulario para agregar tareas y la lista que las muestra
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
 
-// Componente principal de la aplicación.
 function App() {
-  const [todos, setTodos] = useState([]);  // Esto debe estar aquí
+  // Estado que almacena todas las tareas
+  const [todos, setTodos] = useState([]);
 
-  // Estado que almacena el array de tareas (cada una será un objeto con id, texto y estado de completado)
+  /**
+   * Función para agregar una nueva tarea
+   * @param {string} text - El texto de la nueva tarea a agregar
+   */
   const addTodo = (text) => {
-    // Creamos una nueva tarea como objeto
     const newTodo = {
-      id: Date.now(),    // Generamos un ID Único usando marca de tiempo actual
-      text,             // Texto de la tarea (lo recibe como parámetro).
-      completed: false, // Estado inicial de la tarea (no completada)
+      id: Date.now(),  // Usamos la marca de tiempo para que cada tarea tenga un ID único
+      text,            // El texto de la tarea es el que pasa el usuario
+      completed: false // La tarea comienza sin estar completada
     };
 
-    // Actualizamos el estado, agregando la nueva tarea al inicio del array
+    // Actualizamos el estado 'todos' agregando la nueva tarea al principio de la lista
     setTodos([newTodo, ...todos]);
   };
 
-  // JSX que se renderiza en pantalla
+  /**
+   * Función para cambiar el estado de completado de una tarea
+   * @param {number} id - El ID de la tarea que queremos marcar/desmarcar como completada
+   */
+  const toggleComplete = (id) => {
+    // Mapeamos la lista de tareas y actualizamos la tarea con el ID correspondiente
+    setTodos(
+      todos.map(todo =>
+        todo.id === id 
+          ? { ...todo, completed: !todo.completed } // Si la tarea es la correcta, invertimos su estado 'completed'
+          : todo // Si no es la tarea, la dejamos tal cual está
+      )
+    );
+  };
+
+  /**
+   * Función para eliminar una tarea de la lista
+   * @param {number} id - El ID de la tarea que queremos eliminar
+   */
+  const deleteTodo = (id) => {
+    // Filtramos las tareas para eliminar la que tenga el ID igual al pasado
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
   return (
     <div className="App">
-      {/* Título principal */}
       <h1>Lista de Tareas</h1>
 
-      {/* Componente del formulario para añadir nuevas tareas.
-          Le pasamos la función addTodo como prop */}
+      {/* Componente para agregar nuevas tareas */}
       <TodoForm addTodo={addTodo} />
 
-      {/* Componente para mostrar la lista de tareas */}
-      <TodoList todos={todos} />
+      {/* Componente para mostrar todas las tareas */}
+      <TodoList 
+        todos={todos}         // Lista de tareas
+        toggleComplete={toggleComplete} // Función para marcar/desmarcar tareas
+        deleteTodo={deleteTodo} // Función para eliminar tareas
+      />
     </div>
   );
 }
 
-// Exportamos el componente para que pueda ser usado en index.js
 export default App;

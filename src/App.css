@@ -36,3 +36,29 @@
     transform: rotate(360deg);
   }
 }
+
+ul{
+  list-style-type: none;  /* Elimina los puntos (bullets) que aparecen por defecto en las listas */
+  padding: 0; /* Elimina el espacio de relleno por defecto que aparece alrededor de la lista */
+}
+/*Estilo para cada tarea*/
+li{
+  background-color: #f1f1f1;  /* Color de fondo de cada tarea (gris claro) */
+padding :10px; /*Espacio interno alrededor del contenido de cada tarea*/
+margin-bottom: 5px;/*Espacio entre las tareas*/
+border-radius: 5px;/*Bordes redondeados par que la tarea tenga un aspecto más suave*/
+display: flex;/*Usamos flexbox para alinear los elementos dentro de cada tarea*/
+justify-content:space-between;/*Distribuye los elementos dentro del <li> de manera que el contenido se coloca en los extremos*/
+align-items: center;/*Alinea los elementos verticalmente al centro*/
+}
+
+/*Tarea completada*/
+li.completed {
+  text-decoration: line-through;/*Aplica un tachado al texto de la tarea si está completads*/
+  color: #999;/*Cambia el color del texto a gris claro para que se vea  menos prominente*/
+}
+
+/* Botón de borrar */
+
+
+/* Efecto al pasar el mouse por encima del botón */
