@@ -1,76 +1,63 @@
-// Importamos React para poder usar JSX y crear componentes
 import React from 'react';
-
-// Importamos el componente TodoItem que representa cada tarea individual
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import TodoItem from './TodoItem';
+import '../App.css'; // Asegúrate de que esta ruta sea correcta
 
 /**
- * Componente TodoList
- * 
- * Este componente se encarga de mostrar la lista de tareas y permite realizar 
- * acciones sobre ellas, como marcar tareas como completadas o eliminarlas. 
- * Si no hay tareas, se muestra un mensaje indicando que la lista está vacía.
- * 
- * @param {Array} todos - Lista de tareas que se deben mostrar en la interfaz.
- * @param {Function} toggleComplete - Función para marcar o desmarcar una tarea como completada.
- * @param {Function} deleteTodo - Función para eliminar una tarea de la lista.
- * 
- * @returns {JSX.Element} El JSX que renderiza la lista de tareas o un mensaje si la lista está vacía.
+ * Componente TodoList que renderiza una lista animada de tareas.
+ * Utiliza `react-transition-group` con `nodeRef` para animaciones compatibles con React 18.
+ *
+ * @param {Object} props - Propiedades del componente
+ * @param {Array} props.todos - Lista de tareas a mostrar
+ * @param {Function} props.toggleComplete - Función para marcar/desmarcar una tarea como completada
+ * @param {Function} props.deleteTodo - Función para eliminar una tarea
+ *
+ * @returns {JSX.Element} Lista ordenada de tareas con animaciones
  */
 function TodoList({ todos, toggleComplete, deleteTodo }) {
-
-  // Si no hay tareas, mostramos un mensaje indicando que la lista está vacía
-  if (todos.length === 0) {
-    return (
-      <p style={{
-        textAlign: 'center', // Centra el mensaje en la página
-        color: 'gray',       // Color gris para el texto
-        fontSize: 'italic'   // Estilo en cursiva para el mensaje
-      }}>
-        No hay tareas aún
-      </p>
-    );
-  }
-
   /**
-   * Función handleDelete
-   * 
-   * Esta función maneja la eliminación de una tarea. Antes de eliminarla, 
-   * muestra un cuadro de confirmación para que el usuario confirme su acción.
-   * 
-   * @param {number} id - ID de la tarea que se va a eliminar.
+   * Confirma con el usuario antes de eliminar una tarea
+   *
+   * @param {string|number} id - ID de la tarea a eliminar
    */
   const handleDelete = (id) => {
-
-    // Mostrar un cuadro de confirmación con un mensaje
-    const confirmDelete = window.confirm("¿Estás seguro de que quieres eliminar esta tarea?");
-
-    // Si el usuario confirma la eliminación, se ejecuta la función deleteTodo
-    if (confirmDelete) {
-      deleteTodo(id); // Llamamos a la función deleteTodo que elimina la tarea por su id
+    if (window.confirm('¿Estás seguro de eliminar esta tarea?')) {
+      deleteTodo(id);
     }
-    // Si el usuario no confirma, no hacemos nada y la tarea no se elimina
   };
 
+  if (todos.length === 0) {
+    return <p className="no-tasks-message">No hay tareas aún</p>;
+  }
+
   return (
-    // Renderizamos la lista de tareas con numeración
-    <ol style={{ listStyleType: 'decimal', padding: 0 }}> {/* Numeración decimal y sin padding */}
-      {
-        // Usamos map() para recorrer todas las tareas en el array 'todos'
-        todos.map((todo, index) => (
-          // Por cada tarea, renderizamos el componente TodoItem
-          <TodoItem
-            key={todo.id}            // ID único para cada tarea
-            todo={todo}               // Pasamos el objeto 'todo' al componente TodoItem
-            index={index + 1}         // Pasamos el índice de la tarea, +1 para que empiece desde 1
-            toggleComplete={toggleComplete}  // Función para marcar/desmarcar la tarea como completada
-            deleteTodo={() => handleDelete(todo.id)} // Función para eliminar la tarea con confirmación
-          />
-        ))
-      }
+    <ol className="todo-list">
+      <TransitionGroup component={null}>
+        {todos.map((todo, index) => {
+          const nodeRef = React.createRef(); // ← useRef dentro del map no funciona bien
+
+          return (
+            <CSSTransition
+              key={todo.id}
+              nodeRef={nodeRef}
+              timeout={300}
+              classNames="todo-item" // ← Debe coincidir con el CSS
+              unmountOnExit
+            >
+              <div ref={nodeRef}>
+                <TodoItem
+                  todo={todo}
+                  index={index + 1}
+                  toggleComplete={toggleComplete}
+                  deleteTodo={() => handleDelete(todo.id)}
+                />
+              </div>
+            </CSSTransition>
+          );
+        })}
+      </TransitionGroup>
     </ol>
   );
 }
 
-// Exportamos el componente TodoList para que pueda ser utilizado en otras partes del proyecto
 export default TodoList;

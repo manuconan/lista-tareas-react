@@ -1,64 +1,39 @@
-.App {
+/* Estilos para TodoList */
+.todo-list {
+  list-style-type: decimal;
+  padding: 0;
+  margin: 20px 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.no-tasks-message {
   text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Animaciones */
+.todo-item-enter {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.todo-item-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 300ms ease-out;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.todo-item-exit {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.App-link {
-  color: #61dafb;
+.todo-item-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 300ms ease-in;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-ul{
-  list-style-type: none;  /* Elimina los puntos (bullets) que aparecen por defecto en las listas */
-  padding: 0; /* Elimina el espacio de relleno por defecto que aparece alrededor de la lista */
-}
-/*Estilo para cada tarea*/
-li{
-  background-color: #f1f1f1;  /* Color de fondo de cada tarea (gris claro) */
-padding :10px; /*Espacio interno alrededor del contenido de cada tarea*/
-margin-bottom: 5px;/*Espacio entre las tareas*/
-border-radius: 5px;/*Bordes redondeados par que la tarea tenga un aspecto más suave*/
-display: flex;/*Usamos flexbox para alinear los elementos dentro de cada tarea*/
-justify-content:space-between;/*Distribuye los elementos dentro del <li> de manera que el contenido se coloca en los extremos*/
-align-items: center;/*Alinea los elementos verticalmente al centro*/
-}
-
-/*Tarea completada*/
-li.completed {
-  text-decoration: line-through;/*Aplica un tachado al texto de la tarea si está completads*/
-  color: #999;/*Cambia el color del texto a gris claro para que se vea  menos prominente*/
-}
-
-/* Botón de borrar */
-
-
-/* Efecto al pasar el mouse por encima del botón */
