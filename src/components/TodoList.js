@@ -1,19 +1,9 @@
+// src/components/TodoList.js
 import React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import TodoItem from './TodoItem';
 import '../App.css'; // Asegúrate de que esta ruta sea correcta
 
-/**
- * Componente TodoList que renderiza una lista animada de tareas.
- * Utiliza `react-transition-group` con `nodeRef` para animaciones compatibles con React 18.
- *
- * @param {Object} props - Propiedades del componente
- * @param {Array} props.todos - Lista de tareas a mostrar
- * @param {Function} props.toggleComplete - Función para marcar/desmarcar una tarea como completada
- * @param {Function} props.deleteTodo - Función para eliminar una tarea
- *
- * @returns {JSX.Element} Lista ordenada de tareas con animaciones
- */
 function TodoList({ todos, toggleComplete, deleteTodo }) {
   /**
    * Confirma con el usuario antes de eliminar una tarea

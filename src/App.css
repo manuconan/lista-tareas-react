@@ -1,39 +1,55 @@
-/* Estilos para TodoList */
-.todo-list {
-  list-style-type: decimal;
-  padding: 0;
-  margin: 20px 0;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+
+
+.todo-form input {
+  padding: 8px;
+  margin-right: 10px;
 }
 
-.no-tasks-message {
-  text-align: center;
-  color: #666;
+.todo-form button {
+  padding: 8px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.todo-item.completed span {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+}
+
+.no-tasks {
+  color: #888;
   font-style: italic;
-  padding: 20px;
 }
 
 /* Animaciones */
-.todo-item-enter {
+.todo-animation-enter {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: scale(0.9);
 }
-
-.todo-item-enter-active {
+.todo-animation-enter-active {
   opacity: 1;
-  transform: translateY(0);
-  transition: all 300ms ease-out;
+  transform: scale(1);
+  transition: all 300ms;
 }
-
-.todo-item-exit {
+.todo-animation-exit {
   opacity: 1;
-  transform: translateY(0);
+  transform: scale(1);
 }
-
-.todo-item-exit-active {
+.todo-animation-exit-active {
   opacity: 0;
-  transform: translateY(-10px);
-  transition: all 300ms ease-in;
+  transform: scale(0.9);
+  transition: all 300ms;
 }

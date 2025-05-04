@@ -1,66 +1,18 @@
+// src/components/TodoItem.js
 import React from 'react';
-import DateFormatter from './DateFormatter'; // Importamos el componente DateFormatter
+import DateFormatter from './DateFormatter';
 
-/**
- * Componente `TodoItem`
- * Representa una tarea individual con opciones para marcarla como completada o eliminarla.
- *
- * @param {Object} props - Propiedades del componente.
- * @param {Object} props.todo - Objeto con los datos de la tarea.
- * @param {number} props.index - Índice de la tarea en la lista.
- * @param {Function} props.toggleComplete - Función que alterna el estado de completado.
- * @param {Function} props.deleteTodo - Función para eliminar la tarea.
- *
- * @returns {JSX.Element} Representación visual de una tarea individual.
- */
-function TodoItem({ todo, index, toggleComplete, deleteTodo }) {
+function TodoItem({ todo, toggleComplete, deleteTodo }) {
   return (
-    <li
-      className="todo-item"
-      onClick={() => toggleComplete(todo.id)}
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '10px',
-        borderBottom: '1px solid #ccc',
-        cursor: 'pointer',
-        backgroundColor: todo.completed ? '#f5f5f5' : 'white',
-      }}
-    >
-      <span
-        style={{
-          textDecoration: todo.completed ? 'line-through' : 'none',
-          color: todo.completed ? 'gray' : 'inherit',
-        }}
-      >
-        {index}. {todo.text}
+    <div className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+      <span onClick={() => toggleComplete(todo.id)}>
+        {todo.text}
       </span>
-
-      {/* Mostrar la fecha de creación */}
-      <DateFormatter date={todo.createdAt} /> {/* Aquí mostramos la fecha de creación */}
-
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          deleteTodo(todo.id);
-        }}
-        aria-label="Eliminar tarea"
-        style={{
-          marginLeft: '10px',
-          cursor: 'pointer',
-          border: 'none',
-          background: 'transparent',
-          fontSize: '1rem',
-        }}
-        title="Eliminar tarea"
-      >
-        ❌
-      </button>
-    </li>
+      <DateFormatter date={todo.createdAt} format="DD/MM/YYYY HH:mm" />
+      <button onClick={() => deleteTodo(todo.id)}>Eliminar</button>
+    </div>
   );
 }
 
 export default TodoItem;
-// Este componente representa una tarea individual en la lista de tareas.
-// Permite marcarla como completada o eliminarla. Además, muestra la fecha de creación de la tarea.
+
