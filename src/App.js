@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css'; // Importamos el archivo de estilos CSS
 import TodoForm from './components/TodoForm'; // Componente para agregar nuevas tareas
 import TodoList from './components/TodoList'; // Componente para mostrar la lista de tareas
+import { create } from 'framer-motion/client';// Importamos la librería de animaciones Framer Motion
 
 /**
  * Componente principal de la aplicación de lista de tareas.
@@ -44,6 +45,7 @@ function App() {
       id: Date.now(), // Identificador único basado en timestamp
       text,
       completed: false,
+      createdAt: new Date().toISOString(), // Añadimos la fecha de creación
     };
     setTodos([newTodo, ...todos]); // Añade la nueva tarea al principio de la lista
   };

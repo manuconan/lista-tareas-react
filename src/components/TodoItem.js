@@ -1,4 +1,5 @@
 import React from 'react';
+import DateFormatter from './DateFormatter'; // Importamos el componente DateFormatter
 
 /**
  * Componente `TodoItem`
@@ -36,6 +37,9 @@ function TodoItem({ todo, index, toggleComplete, deleteTodo }) {
         {index}. {todo.text}
       </span>
 
+      {/* Mostrar la fecha de creación */}
+      <DateFormatter date={todo.createdAt} /> {/* Aquí mostramos la fecha de creación */}
+
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -58,3 +62,5 @@ function TodoItem({ todo, index, toggleComplete, deleteTodo }) {
 }
 
 export default TodoItem;
+// Este componente representa una tarea individual en la lista de tareas.
+// Permite marcarla como completada o eliminarla. Además, muestra la fecha de creación de la tarea.
