@@ -1,23 +1,30 @@
 // src/components/DateFormatter.js
 import React from 'react';
 
-/**
- * Componente `DateFormatter`
- * Formatea una fecha para mostrarla de manera legible.
- *
- * @param {Object} props - Propiedades del componente.
- * @param {string|number} props.date - Fecha a formatear.
- * @param {string} [props.format] - Formato opcional de la fecha.
- *
- * @returns {JSX.Element} La fecha formateada.
- */
-function DateFormatter({ date, format = 'DD/MM/YYYY HH:mm' }) {
-  const dateObj = new Date(date);
-  
-  // Usamos toLocaleDateString() para formatear la fecha
-  const formattedDate = dateObj.toLocaleDateString();
+const formatter = new Intl.DateTimeFormat('es-ES', {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
 
-  return <span>{formattedDate}</span>;
+/**
+ * Muestra la fecha de creación de una tarea con formato "dd mmm yyyy, HH:mm".
+ *
+ * @param {Object} props
+ * @param {string|number} props.date - Fecha ISO o timestamp a formatear.
+ */
+function DateFormatter({ date }) {
+  const parsed = new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) return null;
+
+  return (
+    <time className="entry__timestamp" dateTime={parsed.toISOString()}>
+      {formatter.format(parsed)}
+    </time>
+  );
 }
 
 export default DateFormatter;

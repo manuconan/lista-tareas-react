@@ -1,52 +1,55 @@
-import React, { useState } from "react";
+// src/components/TodoForm.js
+import React, { useState } from 'react';
+
+const PRIORITIES = [
+  { value: 'baja', label: 'Baja' },
+  { value: 'media', label: 'Media' },
+  { value: 'alta', label: 'Alta' },
+];
 
 /**
- * Componente TodoForm
- * Renderiza un formulario que permite al usuario ingresar una nueva tarea.
- * Llama a la función `addTodo` proporcionada como prop al enviar una nueva tarea.
+ * Formulario para registrar una nueva entrada en la bitácora.
  *
- * @component
- * @param {Object} props - Propiedades del componente
- * @param {Function} props.addTodo - Función para agregar una nueva tarea
+ * @param {Object} props
+ * @param {Function} props.addTodo - (text, priority) => void
  */
 function TodoForm({ addTodo }) {
-  // Estado local para almacenar el texto ingresado en el input
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
+  const [priority, setPriority] = useState('media');
 
-  /**
-   * Maneja el evento de cambio en el campo de texto.
-   * Actualiza el estado local con el valor ingresado por el usuario.
-   *
-   * @param {React.ChangeEvent<HTMLInputElement>} event - Evento de cambio del input
-   */
-  const handleChange = (event) => {
-    setText(event.target.value);
-  };
-
-  /**
-   * Maneja el evento de envío del formulario.
-   * Si el texto no está vacío, llama a `addTodo` y limpia el input.
-   *
-   * @param {React.FormEvent<HTMLFormElement>} event - Evento de envío del formulario
-   */
   const handleSubmit = (event) => {
-    event.preventDefault(); // Previene el comportamiento por defecto del formulario
-    if (text.trim()) {
-      addTodo(text);      // Agrega la tarea usando la función proporcionada
-      setText("");        // Limpia el campo de texto
-    }
+    event.preventDefault();
+    if (!text.trim()) return;
+    addTodo(text, priority);
+    setText('');
+    setPriority('media');
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="entry-form" onSubmit={handleSubmit}>
       <input
         type="text"
         value={text}
-        onChange={handleChange}
-        placeholder="Agregar tarea"
-        aria-label="Campo para nueva tarea"
+        onChange={(event) => setText(event.target.value)}
+        placeholder="Registrar nueva tarea…"
+        aria-label="Texto de la nueva tarea"
+        className="entry-form__input"
       />
-      <button type="submit">Agregar</button>
+      <select
+        value={priority}
+        onChange={(event) => setPriority(event.target.value)}
+        aria-label="Prioridad de la tarea"
+        className="entry-form__priority"
+      >
+        {PRIORITIES.map((p) => (
+          <option key={p.value} value={p.value}>
+            {p.label}
+          </option>
+        ))}
+      </select>
+      <button type="submit" className="entry-form__submit">
+        Añadir
+      </button>
     </form>
   );
 }

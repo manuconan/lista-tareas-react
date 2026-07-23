@@ -1,55 +1,432 @@
+/* ---------------------------------------------------------------------
+   Tokens
+   ------------------------------------------------------------------- */
+:root {
+  --color-bg: #1b2027;
+  --color-surface: #242b33;
+  --color-paper: #f4efe4;
+  --color-paper-shadow: #d9d2bf;
+  --color-ink: #23262b;
+  --color-cream: #e8e3d6;
+  --color-cream-dim: #a9a599;
+  --color-amber: #d9a441;
+  --color-green: #4c7a5e;
+  --color-red: #b4483c;
+  --color-blue: #5b7c99;
 
+  --font-display: 'Special Elite', 'Courier New', monospace;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
 
-.todo-form input {
-  padding: 8px;
-  margin-right: 10px;
+  --radius: 3px;
 }
 
-.todo-form button {
-  padding: 8px;
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
-.todo-item {
+/* ---------------------------------------------------------------------
+   Page shell
+   ------------------------------------------------------------------- */
+.page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  background-image: radial-gradient(circle at 20% 0%, #232a32 0%, var(--color-bg) 55%);
+  font-family: var(--font-body);
+  color: var(--color-cream);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  padding: 2.5rem 1.25rem 4rem;
 }
 
-.todo-item.completed span {
-  text-decoration: line-through;
-  color: gray;
+.ledger-header {
+  width: 100%;
+  max-width: 640px;
+  text-align: left;
+  border-bottom: 1px solid rgba(232, 227, 214, 0.15);
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.75rem;
 }
 
-.todo-list {
+.ledger-header__eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber);
+  margin-bottom: 0.35rem;
+}
+
+.ledger-header__title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  line-height: 1;
+  margin: 0;
+  color: var(--color-cream);
+  letter-spacing: 0.01em;
+}
+
+.ledger-header__meta {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-cream-dim);
+  margin: 0.6rem 0 0;
+}
+
+.ledger {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ---------------------------------------------------------------------
+   Form
+   ------------------------------------------------------------------- */
+.entry-form {
+  display: flex;
+  gap: 0.5rem;
+  background: var(--color-surface);
+  padding: 0.65rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(232, 227, 214, 0.08);
+}
+
+.entry-form__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+.entry-form__input:focus-visible,
+.entry-form__priority:focus-visible,
+.entry-form__submit:focus-visible,
+.tabs__button:focus-visible,
+.entry__delete:focus-visible,
+.entry__edit:focus-visible,
+.entry__checkbox input:focus-visible,
+.alert__retry:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+}
+
+.entry-form__priority {
+  padding: 0 0.5rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.entry-form__submit {
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-amber);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.entry-form__submit:hover {
+  background: #e6b559;
+}
+
+.entry-form__submit:active {
+  transform: translateY(1px);
+}
+
+/* ---------------------------------------------------------------------
+   Filter tabs
+   ------------------------------------------------------------------- */
+.tabs {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.tabs__button {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid rgba(232, 227, 214, 0.15);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-cream-dim);
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.tabs__button:hover {
+  color: var(--color-cream);
+  border-color: rgba(232, 227, 214, 0.3);
+}
+
+.tabs__button.is-active {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  border-color: var(--color-cream);
+}
+
+/* ---------------------------------------------------------------------
+   Alert / status
+   ------------------------------------------------------------------- */
+.alert {
+  background: rgba(180, 72, 60, 0.15);
+  border: 1px solid rgba(180, 72, 60, 0.4);
+  color: var(--color-cream);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
+.alert__retry {
+  margin-left: 0.6rem;
+  background: none;
+  border: 1px solid rgba(232, 227, 214, 0.3);
+  color: var(--color-cream);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+
+.status-text,
+.empty-state {
+  font-family: var(--font-mono);
+  color: var(--color-cream-dim);
+  font-size: 0.9rem;
+  padding: 1.5rem 0.25rem;
+  text-align: center;
+  border: 1px dashed rgba(232, 227, 214, 0.15);
+  border-radius: var(--radius);
+}
+
+/* ---------------------------------------------------------------------
+   Entry list ("hojas" de la bitácora)
+   ------------------------------------------------------------------- */
+.entry-list {
   list-style: none;
+  margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
 }
 
-.no-tasks {
-  color: #888;
-  font-style: italic;
+.entry {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius);
+  border-left: 5px solid var(--color-blue);
+  box-shadow: 0 2px 0 var(--color-paper-shadow);
+  overflow: hidden;
 }
 
-/* Animaciones */
-.todo-animation-enter {
-  opacity: 0;
-  transform: scale(0.9);
+.entry--baja {
+  border-left-color: var(--color-blue);
 }
-.todo-animation-enter-active {
+.entry--media {
+  border-left-color: var(--color-amber);
+}
+.entry--alta {
+  border-left-color: var(--color-red);
+}
+
+.entry.is-done {
+  opacity: 0.75;
+}
+
+.entry__checkbox {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  cursor: pointer;
+}
+
+.entry__checkbox input {
+  position: absolute;
+  opacity: 0;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.entry__checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+}
+
+.entry__checkbox input:checked + .entry__checkmark {
+  background: var(--color-green);
+  border-color: var(--color-green);
+}
+
+.entry__checkbox input:checked + .entry__checkmark::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--color-paper);
+  border-width: 0 2px 2px 0;
+  transform: rotate(40deg);
+}
+
+.entry__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.entry__text {
+  font-size: 0.98rem;
+  line-height: 1.4;
+  cursor: text;
+  word-break: break-word;
+}
+
+.entry.is-done .entry__text {
+  text-decoration: line-through;
+  color: #7a7669;
+}
+
+.entry__edit-input {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid var(--color-amber);
+  border-radius: var(--radius);
+  background: #fffdf8;
+  color: var(--color-ink);
+}
+
+.entry__timestamp {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #7a7669;
+}
+
+.entry__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.entry__edit,
+.entry__delete {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.15rem 0.2rem;
+  text-align: right;
+}
+
+.entry__edit {
+  color: var(--color-blue);
+}
+
+.entry__delete {
+  color: var(--color-red);
+}
+
+.entry__edit:hover,
+.entry__delete:hover {
+  text-decoration: underline;
+}
+
+/* El sello de "Completado" — elemento característico de la bitácora */
+.entry__stamp {
+  position: absolute;
+  right: -0.5rem;
+  top: 0.4rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-green);
+  border: 2px solid var(--color-green);
+  border-radius: 2px;
+  padding: 0.1rem 0.6rem;
+  transform: rotate(-9deg);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------
+   Animación de entrada/salida de tareas
+   ------------------------------------------------------------------- */
+.entry-fade-enter {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+.entry-fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+.entry-fade-exit {
   opacity: 1;
   transform: scale(1);
-  transition: all 300ms;
 }
-.todo-animation-exit {
-  opacity: 1;
-  transform: scale(1);
-}
-.todo-animation-exit-active {
+.entry-fade-exit-active {
   opacity: 0;
-  transform: scale(0.9);
-  transition: all 300ms;
+  transform: scale(0.96);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+/* ---------------------------------------------------------------------
+   Responsive
+   ------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .entry-form {
+    flex-wrap: wrap;
+  }
+  .entry-form__submit {
+    width: 100%;
+    padding: 0.6rem;
+  }
+  .entry {
+    flex-wrap: wrap;
+  }
+  .entry__actions {
+    flex-direction: row;
+    margin-left: 2.1rem;
+  }
 }

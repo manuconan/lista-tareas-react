@@ -1,114 +1,143 @@
 // src/App.js
-import React, { useState, useEffect } from 'react';
-import './App.css'; // Importamos el archivo de estilos CSS
-import TodoForm from './components/TodoForm'; // Componente para agregar nuevas tareas
-import TodoList from './components/TodoList'; // Componente para mostrar la lista de tareas
+import React, { useState, useEffect, useCallback } from 'react';
+import './App.css';
+import TodoForm from './components/TodoForm';
+import TodoList from './components/TodoList';
+import { api } from './api';
+
+const FILTERS = [
+  { key: 'all', label: 'Todas' },
+  { key: 'pending', label: 'Pendientes' },
+  { key: 'completed', label: 'Completadas' },
+];
 
 /**
- * Componente principal de la aplicación de lista de tareas.
- * Maneja la lógica del estado global, el almacenamiento local y el filtrado de tareas.
- *
- * @component
- * @returns {JSX.Element} Elemento JSX que representa la aplicación completa.
+ * Componente principal de la aplicación (Bitácora de tareas).
+ * Gestiona el estado remoto de las tareas a través de la API del backend
+ * y coordina el formulario, el filtrado y la lista.
  */
 function App() {
-  /**
-   * Carga las tareas almacenadas previamente en el localStorage del navegador.
-   * Si no hay tareas almacenadas, devuelve un array vacío.
-   * 
-   * @returns {Array} Lista de tareas o un array vacío si no hay datos.
-   */
-  const loadTodosFromLocalStorage = () => {
-    const storedTodos = localStorage.getItem('todos');
-    return storedTodos ? JSON.parse(storedTodos) : [];
-  };
-
-  // Estado para almacenar todas las tareas
-  const [todos, setTodos] = useState(loadTodosFromLocalStorage());
-
-  // Estado para almacenar el filtro actual: 'all' | 'completed' | 'pending'
+  const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sincroniza las tareas en localStorage cada vez que cambia el estado 'todos'
-  useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(todos));
-  }, [todos]);
-
-  /**
-   * Agrega una nueva tarea a la lista.
-   * Crea un nuevo objeto de tarea con un ID único basado en timestamp y lo agrega al inicio de la lista.
-   * 
-   * @param {string} text - El texto de la nueva tarea.
-   */
-  const addTodo = (text) => {
-    const newTodo = {
-      id: Date.now(), // Identificador único basado en timestamp
-      text,
-      completed: false,
-      createdAt: new Date().toISOString(), // Añadimos la fecha de creación
-    };
-    setTodos([newTodo, ...todos]); // Añade la nueva tarea al principio de la lista
-  };
-
-  /**
-   * Alterna el estado de completado de una tarea.
-   * Cambia el valor de 'completed' entre true/false según el ID de la tarea.
-   * 
-   * @param {number} id - El ID de la tarea a actualizar.
-   */
-  const toggleComplete = (id) => {
-    setTodos(
-      todos.map(todo =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
-
-  /**
-   * Elimina una tarea de la lista.
-   * Filtra la lista de tareas, eliminando la tarea cuyo ID coincida con el ID pasado.
-   * 
-   * @param {number} id - El ID de la tarea a eliminar.
-   */
-  const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
-  };
-
-  /**
-   * Filtra las tareas de acuerdo al filtro seleccionado.
-   * Dependiendo del filtro activo ('all', 'completed', 'pending'), devuelve las tareas correspondientes.
-   * 
-   * @type {Array} filteredTodos - Lista de tareas filtradas según el estado de 'filter'.
-   */
-  const filteredTodos = todos.filter(todo => {
-    if (filter === 'completed') {
-      return todo.completed;
-    } else if (filter === 'pending') {
-      return !todo.completed;
+  const loadTodos = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await api.getTodos();
+      setTodos(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
-    return true; // Mostrar todas las tareas
+  }, []);
+
+  useEffect(() => {
+    loadTodos();
+  }, [loadTodos]);
+
+  const addTodo = async (text, priority) => {
+    try {
+      const newTodo = await api.createTodo(text, priority);
+      setTodos((prev) => [newTodo, ...prev]);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const toggleComplete = async (id) => {
+    const target = todos.find((todo) => todo.id === id);
+    if (!target) return;
+    // Actualización optimista: refleja el cambio antes de que responda el servidor
+    setTodos((prev) =>
+      prev.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo))
+    );
+    try {
+      await api.updateTodo(id, { completed: !target.completed });
+    } catch (err) {
+      setError(err.message);
+      loadTodos(); // revertir al estado real si falla
+    }
+  };
+
+  const editTodo = async (id, text) => {
+    try {
+      const updated = await api.updateTodo(id, { text });
+      setTodos((prev) => prev.map((todo) => (todo.id === id ? updated : todo)));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const deleteTodo = async (id) => {
+    const previous = todos;
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    try {
+      await api.deleteTodo(id);
+    } catch (err) {
+      setError(err.message);
+      setTodos(previous); // revertir si falla el borrado
+    }
+  };
+
+  const filteredTodos = todos.filter((todo) => {
+    if (filter === 'completed') return todo.completed;
+    if (filter === 'pending') return !todo.completed;
+    return true;
   });
 
+  const pendingCount = todos.filter((todo) => !todo.completed).length;
+
   return (
-    <div className="App">
-      <h1>Lista de Tareas</h1>
+    <div className="page">
+      <header className="ledger-header">
+        <span className="ledger-header__eyebrow">Registro de actividad</span>
+        <h1 className="ledger-header__title">Bitácora</h1>
+        <p className="ledger-header__meta">
+          {pendingCount === 0 ? 'Todo despejado' : `${pendingCount} pendiente${pendingCount === 1 ? '' : 's'}`}
+        </p>
+      </header>
 
-      {/* Formulario para ingresar nuevas tareas */}
-      <TodoForm addTodo={addTodo} />
+      <main className="ledger">
+        <TodoForm addTodo={addTodo} />
 
-      {/* Botones para cambiar el filtro de tareas */}
-      <div style={{ marginBottom: '1rem' }}>
-        <button onClick={() => setFilter('all')}>Todas</button>
-        <button onClick={() => setFilter('completed')}>Completadas</button>
-        <button onClick={() => setFilter('pending')}>Pendientes</button>
-      </div>
+        <nav className="tabs" aria-label="Filtrar tareas">
+          {FILTERS.map(({ key, label }) => (
+            <button
+              key={key}
+              type="button"
+              className={`tabs__button ${filter === key ? 'is-active' : ''}`}
+              onClick={() => setFilter(key)}
+              aria-pressed={filter === key}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
 
-      {/* Lista de tareas filtradas */}
-      <TodoList
-        todos={filteredTodos}
-        toggleComplete={toggleComplete}
-        deleteTodo={deleteTodo}
-      />
+        {error && (
+          <div className="alert" role="alert">
+            <strong>No se pudo completar la acción.</strong> {error}
+            <button type="button" className="alert__retry" onClick={loadTodos}>
+              Reintentar
+            </button>
+          </div>
+        )}
+
+        {isLoading ? (
+          <p className="status-text">Cargando entradas…</p>
+        ) : (
+          <TodoList
+            todos={filteredTodos}
+            toggleComplete={toggleComplete}
+            deleteTodo={deleteTodo}
+            editTodo={editTodo}
+          />
+        )}
+      </main>
     </div>
   );
 }

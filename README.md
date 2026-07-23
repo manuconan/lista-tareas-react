@@ -1,104 +1,86 @@
-# Getting Started with Create React App
+# Bitácora — Gestor de tareas
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Aplicación de gestión de tareas con **frontend en React** y una **API REST propia en Express**, pensada como pieza de portafolio para roles de desarrollo backend/full-stack.
 
-## Available Scripts
+## Características
 
-In the project directory, you can run:
+- CRUD completo de tareas (crear, listar, editar, marcar como completada, eliminar)
+- Prioridades (baja / media / alta) con codificación visual por color
+- Edición de texto en línea (doble clic sobre la tarea o botón "Editar")
+- Filtros por estado: todas / pendientes / completadas
+- Actualizaciones optimistas en la UI con reversión automática si falla la petición
+- Manejo de estados de carga y error, con opción de reintentar
+- API desacoplada del frontend mediante variable de entorno (`REACT_APP_API_URL`)
 
-### `npm start`
+## Arquitectura
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-## Cómo arrancar el proyecto (desarrollo)
-
-Desde la raíz del proyecto puedes ejecutar el frontend de React:
-
-```bash
-npm install
-npm start
+```
+├── src/                  # Frontend (React)
+│   ├── api.js             # Cliente HTTP hacia la API (fetch)
+│   ├── App.js              # Estado global y orquestación
+│   └── components/         # TodoForm, TodoList, TodoItem, DateFormatter
+└── backend/               # API REST (Express)
+    └── server.js            # Rutas /todos (GET, POST, PUT, DELETE)
 ```
 
-Esto abrirá la aplicación en desarrollo en http://localhost:3000.
+El frontend no conoce detalles de persistencia: solo habla con la API a través de `src/api.js`. El backend guarda los datos en `backend/data.json` (pensado para desarrollo/demo; en producción se sustituiría por una base de datos real).
 
-Servidor backend local (opcional):
+## API
+
+| Método | Ruta          | Descripción                                  |
+|--------|---------------|-----------------------------------------------|
+| GET    | `/todos`      | Lista todas las tareas                        |
+| POST   | `/todos`      | Crea una tarea (`{ text, priority }`)         |
+| PUT    | `/todos/:id`  | Actualiza texto, prioridad o estado           |
+| DELETE | `/todos/:id`  | Elimina una tarea                             |
+
+Todas las respuestas de error devuelven `{ "error": "mensaje" }` con el código HTTP correspondiente (400, 404, 500).
+
+## Puesta en marcha
+
+Requisitos: Node.js >= 18.
+
+### 1. Backend
 
 ```bash
 cd backend
 npm install
+cp .env.example .env   # ajusta PORT o CORS_ORIGIN si hace falta
 npm start
 ```
 
-El backend escucha en http://localhost:5000 y expone la ruta `/todos`.
+Levanta la API en `http://localhost:5000` (o el puerto que definas en `.env`).
 
-Arrancar frontend y backend simultáneamente (desde la raíz):
+### 2. Frontend
+
+En otra terminal, desde la raíz del proyecto:
+
+```bash
+npm install
+cp .env.example .env   # ajusta REACT_APP_API_URL si hace falta
+npm start
+```
+
+Abre `http://localhost:3000`.
+
+### 3. Arrancar ambos a la vez
+
+Desde la raíz:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Nota: el script `dev` usa la dependencia `concurrently` para iniciar ambos procesos. Si prefieres no usarlo, abre dos terminales y arranca frontend y backend por separado.
+## Tests
 
-Recomendaciones:
-- Node.js >= 16
-- Ignorar `backend/data.json` si no quieres versionar datos de ejemplo (añadido a `.gitignore`).
+```bash
+npm test
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Próximas mejoras posibles
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Persistencia en una base de datos real (PostgreSQL / SQLite) en lugar de un archivo JSON
+- Autenticación de usuarios y tareas por usuario
+- Paginación/orden en el backend para listas grandes
+- Despliegue del backend (Render/Railway) y del frontend (Vercel/Netlify)
